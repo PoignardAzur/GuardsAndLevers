@@ -8,6 +8,7 @@
 #include <random>
 
 #include "Scene.hpp"
+#include "WorldState.hpp"
 
 class Inputs;
 
@@ -30,6 +31,9 @@ public:
   using int_dice= std::uniform_int_distribution<int>;
 
 private:
+  WorldState m_world;
 };
+
+void drawWorld(sf::RenderTarget& window, WorldState world);
 
 #endif // !H_LEVEL

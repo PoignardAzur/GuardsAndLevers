@@ -12,6 +12,9 @@ add_executable(
   src/Inputs.hpp
   src/Level.cpp
   src/Level.hpp
+  src/drawWorld.cpp
+  src/WorldState.cpp
+  src/WorldState.hpp
 )
 
 # Detect and add SFML
