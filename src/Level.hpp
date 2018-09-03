@@ -24,16 +24,18 @@ public:
   void update(Inputs& inputs);
   void display(sf::RenderTarget& window) const;
 
+  // Implemented in drawWorld.cpp
+  void drawWorld(sf::RenderTarget& window) const;
+
   using Rng = std::default_random_engine;
 
   using float_dice = std::uniform_real_distribution<float>;
   using double_dice = std::uniform_real_distribution<double>;
-  using int_dice= std::uniform_int_distribution<int>;
+  using int_dice = std::uniform_int_distribution<int>;
 
 private:
   WorldState m_world;
+  std::vector<WorldState::Unit> m_units;
 };
-
-void drawWorld(sf::RenderTarget& window, WorldState world);
 
 #endif // !H_LEVEL
