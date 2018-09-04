@@ -35,13 +35,15 @@ private:
   // Implemented in drawWorld.cpp
   void drawWorld(sf::RenderTarget& window) const;
 
-  void setAnimations(AnimationState animations);
+  bool waitingForAnimations() const;
 
   WorldState m_world;
   AnimationState m_animations;
-  time_t m_msAnimTime;
-  time_t m_msAnimMaxTime;
+
   std::vector<WorldState::Unit> m_units;
+
+  std::deque<AnimationState> m_nextAnimations;
+  time_t m_msTimeUntilNext = 0;
 };
 
 #endif // !H_LEVEL

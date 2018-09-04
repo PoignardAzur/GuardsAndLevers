@@ -7,10 +7,11 @@
 #include "UnitAction.hpp"
 
 struct UnitAnimation {
-  UnitAction action;
-
   sf::Vector2f getDeltaPos(time_t msAnimTime) const;
   time_t msDuration() const;
+
+  UnitAction action;
+  time_t msLifeTime = 0;
 };
 
 #endif // !UNIT_ANIMATION_HPP

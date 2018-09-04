@@ -1,7 +1,7 @@
 
 #include "WorldState.hpp"
 
-std::vector<WorldState::Unit> WorldState::getUnits() const {
+std::vector<WorldState::Unit> WorldState::getUnits() {
   std::vector<WorldState::Unit> units(1 + this->guards.size());
 
   units[0] = { &this->player.pos, sf::Color::Green };

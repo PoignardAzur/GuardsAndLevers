@@ -2,7 +2,7 @@
 #ifndef UNIT_ACTION_HPP
 #define UNIT_ACTION_HPP
 
-#include "Grid2.hpp"
+#include "WorldState.hpp"
 
 struct UnitAction {
   enum class Type {
@@ -18,8 +18,10 @@ struct UnitAction {
     Left
   };
 
-  Type type;
-  Direction dir;
+  void applyChanges(WorldState::Unit& unit) const;
+
+  Type type = Type::IdleAction;
+  Direction dir = Direction::Left;
 };
 
 Pos getDeltaPosFromDir(UnitAction::Direction dir);

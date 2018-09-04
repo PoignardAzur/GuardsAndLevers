@@ -46,7 +46,7 @@ void Level::drawWorld(sf::RenderTarget& window) const {
     // spriteAnim = spriteSheet[unit.spriteName, animation.type];
     circle.setFillColor(unit.color);
 
-    time_t msAnimTime = std::min(m_msAnimTime, animation.msDuration());
+    time_t msAnimTime = std::min(animation.msLifeTime, animation.msDuration());
     sf::Vector2f dpos = animation.getDeltaPos(msAnimTime);
     circle.setPosition(
       x0 + (unit.pos->x + dpos.x) * tileSize.x,

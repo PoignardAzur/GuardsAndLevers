@@ -29,11 +29,11 @@ struct WorldState {
   PlayerState player = {};
 
   struct Unit {
-    const Pos* pos;
+    Pos* pos;
     sf::Color color;
   };
 
-  std::vector<Unit> getUnits() const;
+  std::vector<Unit> getUnits();
 };
 
 #endif // !WORLD_STATE_HPP
