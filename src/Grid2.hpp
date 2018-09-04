@@ -6,10 +6,9 @@
 #include <memory>
 #include <cassert>
 
-struct Pos {
-  long x;
-  long y;
-};
+#include <SFML/System/Vector2.hpp>
+
+using Pos = sf::Vector2<long>;
 
 template <typename T>
 class Grid2

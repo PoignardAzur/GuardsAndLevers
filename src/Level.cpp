@@ -6,13 +6,11 @@
 #include "Level.hpp"
 #include "units.hpp"
 
-#include <iostream>
-
 Level::Level() {
   m_world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
-    { GuardState {2, 3} },
-    PlayerState {3, 3}
+    { GuardState {{2, 3}} },
+    PlayerState {{3, 3}}
   };
 
   for (long x = 1; x < 9; ++x) {
@@ -24,6 +22,24 @@ Level::Level() {
 
   m_units = m_world.getUnits();
   m_animations.unitAnimations.resize(m_units.size(), {});
+}
+
+void Level::onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key) {
+  (void)inputs;
+
+  switch (key) {
+    case sf::Keyboard::Up:
+    case sf::Keyboard::Right:
+    case sf::Keyboard::Down:
+    case sf::Keyboard::Left: {
+      if (!waitingForAnimations()) {
+        playerMove(key);
+      }
+      break;
+    }
+    default:
+    break;
+  }
 }
 
 void Level::update(Inputs& inputs) {
@@ -56,6 +72,7 @@ void Level::update(Inputs& inputs) {
           currentAnim = nextAnim;
         }
       }
+      m_msTimeUntilNext = m_nextAnimations[0].msMaxDuration();
       m_nextAnimations.pop_front();
     }
   }

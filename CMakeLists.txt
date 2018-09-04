@@ -12,7 +12,8 @@ add_executable(
   src/Inputs.hpp
   src/Level.cpp
   src/Level.hpp
-  src/drawWorld.cpp
+  src/Level_drawWorld.cpp
+  src/Level_playerMove.cpp
   src/UnitAction.cpp
   src/UnitAction.hpp
   src/UnitAnimation.cpp

@@ -1,7 +1,5 @@
 
 #include <cassert>
-#include <SFML/Graphics.hpp>
-#include "WorldState.hpp"
 #include "Level.hpp"
 
 const sf::Vector2f tileSize = { 50.0f, 50.0f };
