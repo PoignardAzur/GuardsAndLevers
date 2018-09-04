@@ -15,7 +15,7 @@ sf::Vector2f UnitAnimation::getDeltaPos(time_t msAnimTime) const {
       float progression = (float)msAnimTime / (float)msDuration();
 
       if (progression > 0.5)
-        progression = 0.5 - progression;
+        progression = 1 - progression;
 
       return { progression * dpos.x, progression * dpos.y };
     }
@@ -26,5 +26,5 @@ sf::Vector2f UnitAnimation::getDeltaPos(time_t msAnimTime) const {
 }
 
 time_t UnitAnimation::msDuration() const {
-  return 1000;
+  return 400;
 }

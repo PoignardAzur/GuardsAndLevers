@@ -34,6 +34,7 @@ public:
 private:
   void drawWorld(sf::RenderTarget& window) const;
   void playerMove(sf::Keyboard::Key key);
+  UnitAction guardAi(size_t i) const;
 
   bool waitingForAnimations() const;
 

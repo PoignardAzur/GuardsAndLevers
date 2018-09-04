@@ -21,7 +21,7 @@ struct UnitAction {
   void applyChanges(WorldState::Unit& unit) const;
 
   Type type = Type::IdleAction;
-  Direction dir = Direction::Left;
+  Direction dir = Direction::Up;
 };
 
 Pos getDeltaPosFromDir(UnitAction::Direction dir);
