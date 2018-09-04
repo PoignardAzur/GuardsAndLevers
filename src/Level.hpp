@@ -9,6 +9,7 @@
 
 #include "Scene.hpp"
 #include "WorldState.hpp"
+#include "AnimationState.hpp"
 
 class Inputs;
 
@@ -24,9 +25,6 @@ public:
   void update(Inputs& inputs);
   void display(sf::RenderTarget& window) const;
 
-  // Implemented in drawWorld.cpp
-  void drawWorld(sf::RenderTarget& window) const;
-
   using Rng = std::default_random_engine;
 
   using float_dice = std::uniform_real_distribution<float>;
@@ -34,7 +32,15 @@ public:
   using int_dice = std::uniform_int_distribution<int>;
 
 private:
+  // Implemented in drawWorld.cpp
+  void drawWorld(sf::RenderTarget& window) const;
+
+  void setAnimations(AnimationState animations);
+
   WorldState m_world;
+  AnimationState m_animations;
+  time_t m_msAnimTime;
+  time_t m_msAnimMaxTime;
   std::vector<WorldState::Unit> m_units;
 };
 

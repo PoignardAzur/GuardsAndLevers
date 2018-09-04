@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include <SFML/Graphics.hpp>
 #include "WorldState.hpp"
 #include "Level.hpp"
@@ -37,16 +38,20 @@ void Level::drawWorld(sf::RenderTarget& window) const {
   circle.setRadius(std::min(tileSize.x, tileSize.y) * 0.4f);
   circle.setPointCount(16);
 
+  assert(m_units.size() == m_animations.unitAnimations.size());
   for (size_t i = 0; i < m_units.size(); ++i) {
     const WorldState::Unit& unit = m_units[i];
+    const UnitAnimation& animation = m_animations.unitAnimations[i];
 
+    // spriteAnim = spriteSheet[unit.spriteName, animation.type];
     circle.setFillColor(unit.color);
 
-    sf::Vector2f basePos = {
-      x0 + unit.pos->x * tileSize.x,
-      y0 + unit.pos->y * tileSize.y
-    };
-    circle.setPosition(basePos);
+    time_t msAnimTime = std::min(m_msAnimTime, animation.msDuration());
+    sf::Vector2f dpos = animation.getDeltaPos(msAnimTime);
+    circle.setPosition(
+      x0 + (unit.pos->x + dpos.x) * tileSize.x,
+      y0 + (unit.pos->y + dpos.y) * tileSize.y
+    );
     window.draw(circle);
   }
 }

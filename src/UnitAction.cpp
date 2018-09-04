@@ -1,7 +1,8 @@
 
+#include <cassert>
 #include "UnitAction.hpp"
 
-Pos getDeltaPos(Direction dir) {
+Pos getDeltaPosFromDir(UnitAction::Direction dir) {
   switch (dir) {
     case UnitAction::Direction::Up:
       return { 0, -1 };
@@ -12,4 +13,5 @@ Pos getDeltaPos(Direction dir) {
     case UnitAction::Direction::Left:
       return { -1, 0 };
   }
+  assert(0);
 }

@@ -22,6 +22,6 @@ struct UnitAction {
   Direction dir;
 };
 
-Pos getDeltaPos(Direction dir);
+Pos getDeltaPosFromDir(UnitAction::Direction dir);
 
 #endif // !UNIT_ACTION_HPP

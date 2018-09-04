@@ -2,6 +2,8 @@
 #ifndef GRID_2_HPP
 #define GRID_2_HPP
 
+#include <vector>
+#include <memory>
 #include <cassert>
 
 struct Pos {
@@ -13,6 +15,7 @@ template <typename T>
 class Grid2
 {
 public:
+  Grid2() = default;
   Grid2(Pos size, T fillValue);
   Grid2(const Grid2<T>& other) = default;
   Grid2(Grid2<T>&& other);
@@ -30,7 +33,7 @@ public:
 
 private:
   std::vector<T> m_values;
-  Pos m_size;
+  Pos m_size = { 0, 0 };
 };
 
 template <typename T>
@@ -38,7 +41,6 @@ Grid2<T>::Grid2(Pos size, T fillValue) :
   m_values(size.x * size.y, fillValue),
   m_size(size)
 {
-
 }
 
 template <typename T>

@@ -2,7 +2,6 @@
 #ifndef WORLD_STATE_HPP
 #define WORLD_STATE_HPP
 
-#include <memory>
 #include <vector>
 
 #include <SFML/Graphics.hpp>

@@ -13,8 +13,14 @@ add_executable(
   src/Level.cpp
   src/Level.hpp
   src/drawWorld.cpp
+  src/UnitAction.cpp
+  src/UnitAction.hpp
+  src/UnitAnimation.cpp
+  src/UnitAnimation.hpp
   src/WorldState.cpp
   src/WorldState.hpp
+  src/AnimationState.cpp
+  src/AnimationState.hpp
 )
 
 # Detect and add SFML
