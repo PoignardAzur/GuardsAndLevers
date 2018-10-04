@@ -39,11 +39,14 @@ void Level::playerMove(sf::Keyboard::Key key) {
   auto nextPlayerPos = m_world.player.pos + getDeltaPosFromDir(actions[0].dir);
   if (WorldState::isSolid(m_world.tiles, nextPlayerPos)) {
     actions[0].type = UnitAction::Type::BumpAction;
+    nextPlayerPos = m_world.player.pos;
   }
 
   // MOVE ENEMIES
   for (size_t i = 0; i < m_world.guards.size(); ++i) {
-    actions[i + 1] = guardAi(i);
+    actions[i + 1] = nextGuardMove(
+      WorldState::getDistances(m_world.tiles, nextPlayerPos), i
+    );
   }
 
   // HANDLE TERRAIN

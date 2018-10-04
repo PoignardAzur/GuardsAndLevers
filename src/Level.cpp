@@ -9,7 +9,7 @@
 Level::Level() {
   m_world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
-    { GuardState {{2, 3}} },
+    { GuardState {{2, 3}, {}} },
     PlayerState {{3, 3}}
   };
 

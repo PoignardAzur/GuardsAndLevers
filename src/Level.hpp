@@ -6,6 +6,7 @@
 #include <memory>
 #include <deque>
 #include <random>
+#include <unordered_map>
 
 #include "Scene.hpp"
 #include "WorldState.hpp"
@@ -34,7 +35,7 @@ public:
 private:
   void drawWorld(sf::RenderTarget& window) const;
   void playerMove(sf::Keyboard::Key key);
-  UnitAction guardAi(size_t i) const;
+  UnitAction nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i) const;
 
   bool waitingForAnimations() const;
 
@@ -44,6 +45,7 @@ private:
   std::vector<WorldState::Unit> m_units;
 
   Grid2<int> m_losTokens;
+//  std::unordered_map<Pos, Grid2<int>> m_pathfindings;
   std::map<Pos, Grid2<int>> m_pathfindings;
 
   std::deque<AnimationState> m_nextAnimations;

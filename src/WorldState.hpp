@@ -21,6 +21,9 @@ struct PlayerState {
 
 struct GuardState {
   Pos pos;
+  std::vector<Pos> patrolStops;
+  size_t nextStopId = 0;
+  bool isAngry = false;
 };
 
 struct WorldState {
@@ -30,6 +33,7 @@ struct WorldState {
   };
 
   static bool isSolid(const Grid2<Tile>& tilemap, Pos tilePos);
+  static Grid2<int> getDistances(const Grid2<Tile>& tilemap, Pos tilePos);
   static void triggerTile(Grid2<Tile>& tilemap, Pos triggeredTile);
 
   std::vector<Unit> getUnits();
