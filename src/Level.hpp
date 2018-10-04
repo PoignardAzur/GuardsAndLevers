@@ -44,18 +44,21 @@ public:
   using int_dice = std::uniform_int_distribution<int>;
 
 private:
-  void drawWorld(sf::RenderTarget& window) const;
-  void playerMove(sf::Keyboard::Key key);
-  UnitAction nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i);
-
+  void onPlayerMove(sf::Keyboard::Key key);
+  UnitAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
   bool waitingForAnimations() const;
+
+  void updateLos();
+
+  void drawWorld(sf::RenderTarget& window) const;
 
   WorldState m_world;
   AnimationState m_animations;
 
   std::vector<WorldState::Unit> m_units;
 
-  Grid2<int> m_losTokens;
+  std::vector<Grid2<char>> m_individualLosTokens;
+  Grid2<char> m_collectiveLosTokens;
   std::unordered_map<Pos, Grid2<int>> m_pathfindings;
 
   std::deque<AnimationState> m_nextAnimations;

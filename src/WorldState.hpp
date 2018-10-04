@@ -15,12 +15,20 @@ enum class Tile : size_t {
   TileCount
 };
 
+enum class Direction {
+  Up,
+  Right,
+  Down,
+  Left
+};
+
 struct PlayerState {
   Pos pos;
 };
 
 struct GuardState {
   Pos pos;
+  Direction dir;
   std::vector<Pos> patrolStops;
   size_t nextStopId = 0;
   bool isAngry = false;
@@ -32,8 +40,10 @@ struct WorldState {
     sf::Color color;
   };
 
-  static bool isSolid(const Grid2<Tile>& tilemap, Pos tilePos);
+  static bool isSolid(Tile tile);
+  static bool blocksLos(Tile tile);
   static Grid2<int> getDistances(const Grid2<Tile>& tilemap, Pos tilePos);
+  static Grid2<char> generateLosTokens(const Grid2<Tile>& tilemap, const GuardState& guard);
   static void triggerTile(Grid2<Tile>& tilemap, Pos triggeredTile);
 
   std::vector<Unit> getUnits();
@@ -42,5 +52,7 @@ struct WorldState {
   std::vector<GuardState> guards = {};
   PlayerState player = {};
 };
+
+Pos getDeltaPosFromDir(Direction dir);
 
 #endif // !WORLD_STATE_HPP

@@ -21,8 +21,11 @@ void Level::drawWorld(sf::RenderTarget& window) const {
   Pos worldSize = m_world.tiles.getSize();
   for (long x = 0; x < worldSize.x; ++x) {
     for (long y = 0; y < worldSize.y; ++y) {
-      const Tile tileId = m_world.tiles.get(x, y);
-      rectangle.setFillColor(tileColors[(size_t)tileId]);
+      sf::Color losColor = m_collectiveLosTokens.get(x, y)
+        ? sf::Color(0xFFFFFFFF)
+        : sf::Color(0xE0E0E0FF);
+      Tile tileId = m_world.tiles.get(x, y);
+      rectangle.setFillColor(tileColors[(size_t)tileId] * losColor);
       rectangle.setPosition(x0 + x * tileSize.x, y0 + y * tileSize.y);
       window.draw(rectangle);
     }

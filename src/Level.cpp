@@ -9,7 +9,7 @@
 Level::Level() {
   m_world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
-    { GuardState {{2, 3}, { {7, 7}, {2, 7} }} },
+    { GuardState {{2, 3}, Direction::Up, { {7, 7}, {2, 7} }} },
     PlayerState {{3, 3}}
   };
 
@@ -22,6 +22,9 @@ Level::Level() {
 
   m_units = m_world.getUnits();
   m_animations.unitAnimations.resize(m_units.size(), {});
+
+  m_individualLosTokens.resize(m_world.guards.size());
+  updateLos();
 
   for (const GuardState& guard : m_world.guards) {
     for (Pos patrolStop : guard.patrolStops) {
@@ -44,7 +47,7 @@ void Level::onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key) {
     case sf::Keyboard::Down:
     case sf::Keyboard::Left: {
       if (!waitingForAnimations()) {
-        playerMove(key);
+        onPlayerMove(key);
       }
       break;
     }
@@ -86,6 +89,9 @@ void Level::update(Inputs& inputs) {
       m_msTimeUntilNext = m_nextAnimations[0].msMaxDuration();
       m_nextAnimations.pop_front();
     }
+    else {
+      updateLos();
+    }
   }
 }
 
@@ -96,4 +102,24 @@ void Level::display(sf::RenderTarget& window) const {
 
 bool Level::waitingForAnimations() const {
   return m_msTimeUntilNext != 0 || !m_nextAnimations.empty();
+}
+
+void Level::updateLos() {
+  m_collectiveLosTokens = Grid2<char>(m_world.tiles.getSize(), 0);
+
+  for (size_t i = 0; i < m_world.guards.size(); ++i) {
+    m_individualLosTokens[i] = WorldState::generateLosTokens(
+      m_world.tiles, m_world.guards[i]
+    );
+
+    for (long x = 0; x < m_world.tiles.getSize().x; ++x) {
+      for (long y = 0; y < m_world.tiles.getSize().y; ++y) {
+        m_collectiveLosTokens.set(
+          x, y,
+          m_collectiveLosTokens.get(x, y)
+          || m_individualLosTokens[i].get(x, y)
+        );
+      }
+    }
+  }
 }

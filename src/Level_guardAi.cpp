@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-UnitAction Level::nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i) {
+UnitAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i) {
   assert(i < m_world.guards.size());
 
   GuardState& guard = m_world.guards[i];
@@ -24,15 +24,15 @@ UnitAction Level::nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i) {
     pathfindingDistances = &m_pathfindings.find(nextStop)->second;
   }
 
-  UnitAction::Direction directions[] = {
-    UnitAction::Direction::Up,
-    UnitAction::Direction::Right,
-    UnitAction::Direction::Down,
-    UnitAction::Direction::Left
+  Direction directions[] = {
+    Direction::Up,
+    Direction::Right,
+    Direction::Down,
+    Direction::Left
   };
   int minDistance = INT_MAX;
-  UnitAction::Direction selectedDir = UnitAction::Direction::Up;
-  for (UnitAction::Direction dir : directions) {
+  Direction selectedDir = Direction::Up;
+  for (Direction dir : directions) {
     auto selectedPos = guard.pos + getDeltaPosFromDir(dir);
     if (pathfindingDistances->get(selectedPos) < minDistance) {
       selectedDir = dir;

@@ -3,23 +3,23 @@
 #include "Level.hpp"
 
 UnitAction _getPlayerAction(sf::Keyboard::Key key) {
-  UnitAction::Direction dir;
+  Direction dir;
 
   switch (key) {
     case sf::Keyboard::Up: {
-      dir = UnitAction::Direction::Up;
+      dir = Direction::Up;
       break;
     }
     case sf::Keyboard::Right: {
-      dir = UnitAction::Direction::Right;
+      dir = Direction::Right;
       break;
     }
     case sf::Keyboard::Down: {
-      dir = UnitAction::Direction::Down;
+      dir = Direction::Down;
       break;
     }
     case sf::Keyboard::Left: {
-      dir = UnitAction::Direction::Left;
+      dir = Direction::Left;
       break;
     }
     default: {
@@ -29,7 +29,7 @@ UnitAction _getPlayerAction(sf::Keyboard::Key key) {
   return { UnitAction::Type::MoveAction, dir };
 }
 
-void Level::playerMove(sf::Keyboard::Key key) {
+void Level::onPlayerMove(sf::Keyboard::Key key) {
   std::vector<UnitAction> actions(m_units.size());
   AnimationState nextState;
 
@@ -37,14 +37,14 @@ void Level::playerMove(sf::Keyboard::Key key) {
   actions[0] = { _getPlayerAction(key) };
 
   auto nextPlayerPos = m_world.player.pos + getDeltaPosFromDir(actions[0].dir);
-  if (WorldState::isSolid(m_world.tiles, nextPlayerPos)) {
+  if (WorldState::isSolid(m_world.tiles.get(nextPlayerPos))) {
     actions[0].type = UnitAction::Type::BumpAction;
     nextPlayerPos = m_world.player.pos;
   }
 
   // MOVE ENEMIES
   for (size_t i = 0; i < m_world.guards.size(); ++i) {
-    actions[i + 1] = nextGuardMove(
+    actions[i + 1] = nextGuardMovement(
       WorldState::getDistances(m_world.tiles, nextPlayerPos), i
     );
   }

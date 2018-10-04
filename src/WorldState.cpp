@@ -7,8 +7,24 @@
 #include "WorldState.hpp"
 #include "UnitAction.hpp"
 
-bool WorldState::isSolid(const Grid2<Tile>& tilemap, Pos tilePos) {
-  switch (tilemap.get(tilePos)) {
+bool WorldState::isSolid(Tile tile) {
+  switch (tile) {
+    case Tile::Ground:
+    return false;
+    case Tile::Wall:
+    return true;
+    case Tile::OpenDoor:
+    return false;
+    case Tile::ClosedDoor:
+    return true;
+    case Tile::TileCount:
+    break;
+  }
+  assert(0);
+}
+
+bool WorldState::blocksLos(Tile tile) {
+  switch (tile) {
     case Tile::Ground:
     return false;
     case Tile::Wall:
@@ -45,17 +61,17 @@ Grid2<int> WorldState::getDistances(const Grid2<Tile>& tilemap, Pos target) {
       break;
     }
 
-    UnitAction::Direction directions[] = {
-      UnitAction::Direction::Up,
-      UnitAction::Direction::Right,
-      UnitAction::Direction::Down,
-      UnitAction::Direction::Left
+    Direction directions[] = {
+      Direction::Up,
+      Direction::Right,
+      Direction::Down,
+      Direction::Left
     };
 
-    for (UnitAction::Direction dir : directions) {
+    for (Direction dir : directions) {
       auto otherNode = closestNode + getDeltaPosFromDir(dir);
 
-      if (!isSolid(tilemap, otherNode)) {
+      if (!isSolid(tilemap.get(otherNode))) {
         distances.set(otherNode, std::min(
           distances.get(otherNode), distances.get(closestNode) + 1
         ));
@@ -65,6 +81,25 @@ Grid2<int> WorldState::getDistances(const Grid2<Tile>& tilemap, Pos target) {
     unvisitedNodes.pop_front();
   }
   return distances;
+}
+
+Grid2<char> WorldState::generateLosTokens(const Grid2<Tile>& tilemap, const GuardState& guard) {
+  Grid2<char> tokens(tilemap.getSize(), 0);
+
+  Pos forwardStep = getDeltaPosFromDir(guard.dir);
+  Pos rightStep = getDeltaPosFromDir((Direction)(((int)guard.dir + 1) % 4));
+  Pos leftStep = -rightStep;
+
+  Pos projections[] = { leftStep, { 0, 0 }, rightStep };
+  for (Pos projection : projections) {
+    Pos currentPos = guard.pos + projection - forwardStep;
+    while (!WorldState::blocksLos(tilemap.get(currentPos))) {
+      tokens.set(currentPos, 1);
+      currentPos += forwardStep;
+    }
+  }
+
+  return tokens;
 }
 
 void WorldState::triggerTile(Grid2<Tile>& tilemap, Pos triggeredTile) {
@@ -82,4 +117,18 @@ std::vector<WorldState::Unit> WorldState::getUnits() {
     units[i + 1] = { &this->guards[i].pos, sf::Color::Red };
   }
   return units;
+}
+
+Pos getDeltaPosFromDir(Direction dir) {
+  switch (dir) {
+    case Direction::Up:
+      return { 0, -1 };
+    case Direction::Right:
+      return { 1, 0 };
+    case Direction::Down:
+      return { 0, 1 };
+    case Direction::Left:
+      return { -1, 0 };
+  }
+  assert(0);
 }

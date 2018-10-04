@@ -11,19 +11,10 @@ struct UnitAction {
     IdleAction
   };
 
-  enum class Direction {
-    Up,
-    Right,
-    Down,
-    Left
-  };
-
   void applyChanges(WorldState::Unit& unit) const;
 
   Type type = Type::IdleAction;
   Direction dir = Direction::Up;
 };
-
-Pos getDeltaPosFromDir(UnitAction::Direction dir);
 
 #endif // !UNIT_ACTION_HPP
