@@ -9,7 +9,7 @@
 Level::Level() {
   m_world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
-    { GuardState {{2, 3}, {}} },
+    { GuardState {{2, 3}, { {7, 7}, {2, 7} }} },
     PlayerState {{3, 3}}
   };
 
@@ -22,6 +22,17 @@ Level::Level() {
 
   m_units = m_world.getUnits();
   m_animations.unitAnimations.resize(m_units.size(), {});
+
+  for (const GuardState& guard : m_world.guards) {
+    for (Pos patrolStop : guard.patrolStops) {
+      if (m_pathfindings.count(patrolStop) == 0) {
+        m_pathfindings[patrolStop] = WorldState::getDistances(
+          m_world.tiles, patrolStop
+        );
+      }
+    }
+  }
+
 }
 
 void Level::onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key) {

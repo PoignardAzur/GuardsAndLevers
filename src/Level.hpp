@@ -14,6 +14,17 @@
 
 class Inputs;
 
+namespace std {
+  template <>
+  struct hash<Pos>
+  {
+    std::size_t operator()(const Pos& pos) const
+    {
+      return std::hash<long>()(pos.x) ^ std::hash<long>()(pos.y) << 1;
+    }
+  };
+}
+
 class Level : public Scene {
 public:
   Level();
@@ -35,7 +46,7 @@ public:
 private:
   void drawWorld(sf::RenderTarget& window) const;
   void playerMove(sf::Keyboard::Key key);
-  UnitAction nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i) const;
+  UnitAction nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i);
 
   bool waitingForAnimations() const;
 
@@ -45,8 +56,7 @@ private:
   std::vector<WorldState::Unit> m_units;
 
   Grid2<int> m_losTokens;
-//  std::unordered_map<Pos, Grid2<int>> m_pathfindings;
-  std::map<Pos, Grid2<int>> m_pathfindings;
+  std::unordered_map<Pos, Grid2<int>> m_pathfindings;
 
   std::deque<AnimationState> m_nextAnimations;
   time_t m_msTimeUntilNext = 0;

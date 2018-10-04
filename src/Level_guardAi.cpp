@@ -3,19 +3,25 @@
 #include <cassert>
 #include "Level.hpp"
 
-UnitAction Level::nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i) const {
+#include <cstdio>
+
+UnitAction Level::nextGuardMove(const Grid2<int>& distancesToPlayer, size_t i) {
   assert(i < m_world.guards.size());
 
-  const GuardState& guard = m_world.guards[i];
+  GuardState& guard = m_world.guards[i];
   const Grid2<int>* pathfindingDistances = nullptr;
 
-  if (true || guard.isAngry) {
+  if (guard.isAngry) {
     pathfindingDistances = &distancesToPlayer;
   }
   else {
+    if (guard.pos == guard.patrolStops[guard.nextStopId]) {
+      // TODO - Rework with functional logic?
+      guard.nextStopId++;
+      guard.nextStopId %= guard.patrolStops.size();
+    }
     Pos nextStop = guard.patrolStops[guard.nextStopId];
-    // TODO
-    // pathfindingDistances = &m_pathfindings.find(nextStop)->second;
+    pathfindingDistances = &m_pathfindings.find(nextStop)->second;
   }
 
   UnitAction::Direction directions[] = {
