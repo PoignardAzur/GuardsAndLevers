@@ -6,6 +6,7 @@
 
 struct AnimationState {
   std::vector<UnitAnimation> unitAnimations;
+  Grid2<Tile> tiles;
 
   time_t msMaxDuration() const;
 };

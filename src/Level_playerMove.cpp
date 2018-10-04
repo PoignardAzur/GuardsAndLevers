@@ -31,16 +31,36 @@ UnitAction _getPlayerAction(sf::Keyboard::Key key) {
 
 void Level::playerMove(sf::Keyboard::Key key) {
   std::vector<UnitAction> actions(m_units.size());
+  AnimationState nextState;
 
   // MOVE PLAYER
   actions[0] = { _getPlayerAction(key) };
+
+  auto nextPlayerPos = m_world.player.pos + getDeltaPosFromDir(actions[0].dir);
+  if (WorldState::isSolid(m_world.tiles, nextPlayerPos)) {
+    actions[0].type = UnitAction::Type::BumpAction;
+  }
 
   // MOVE ENEMIES
   for (size_t i = 0; i < m_world.guards.size(); ++i) {
     actions[i + 1] = guardAi(i);
   }
 
-  // HANDLE COLLISIONS
+  // HANDLE TERRAIN
+  nextState.tiles = m_world.tiles;
+  for (size_t i = 0; i < actions.size(); ++i) {
+    const WorldState::Unit& unit = m_units[i];
+
+    if (actions[i].type == UnitAction::Type::BumpAction) {
+      Pos bumpPos = *unit.pos + getDeltaPosFromDir(actions[i].dir);
+      WorldState::triggerTile(nextState.tiles, bumpPos);
+    }
+  }
+
+  // CLOSE DOORS
+  // TODO
+
+  // HANDLE INTER-UNIT COLLISIONS
   bool checkCollisions = true;
   while (checkCollisions) {
     checkCollisions = false;
@@ -66,13 +86,18 @@ void Level::playerMove(sf::Keyboard::Key key) {
     }
   }
 
+  // UPDATE LOS
+  // TODO
+
+  // SPREAD ANGRY
+  // TODO
+
   // ADD MOVEMENT ANIMATIONS
-  AnimationState nextAnimations;
-  nextAnimations.unitAnimations.resize(m_units.size(), {});
+  nextState.unitAnimations.resize(m_units.size(), {});
   for (size_t i = 0; i < actions.size(); ++i) {
-    nextAnimations.unitAnimations[i].action = actions[i];
+    nextState.unitAnimations[i].action = actions[i];
   }
 
-  m_nextAnimations = { nextAnimations };
+  m_nextAnimations = { nextState };
   m_msTimeUntilNext = 0;
 }

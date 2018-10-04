@@ -24,16 +24,19 @@ struct GuardState {
 };
 
 struct WorldState {
-  Grid2<Tile> tiles;
-  std::vector<GuardState> guards = {};
-  PlayerState player = {};
-
   struct Unit {
     Pos* pos;
     sf::Color color;
   };
 
+  static bool isSolid(const Grid2<Tile>& tilemap, Pos tilePos);
+  static void triggerTile(Grid2<Tile>& tilemap, Pos triggeredTile);
+
   std::vector<Unit> getUnits();
+
+  Grid2<Tile> tiles;
+  std::vector<GuardState> guards = {};
+  PlayerState player = {};
 };
 
 #endif // !WORLD_STATE_HPP

@@ -1,5 +1,29 @@
 
+#include <cassert>
 #include "WorldState.hpp"
+
+bool WorldState::isSolid(const Grid2<Tile>& tilemap, Pos tilePos) {
+  switch (tilemap.get(tilePos)) {
+    case Tile::Ground:
+    return false;
+    case Tile::Wall:
+    return true;
+    case Tile::OpenDoor:
+    return false;
+    case Tile::ClosedDoor:
+    return true;
+    case Tile::TileCount:
+    break;
+  }
+  assert(0);
+}
+
+void WorldState::triggerTile(Grid2<Tile>& tilemap, Pos triggeredTile) {
+  switch (tilemap.get(triggeredTile)) {
+    default:
+    break;
+  }
+}
 
 std::vector<WorldState::Unit> WorldState::getUnits() {
   std::vector<WorldState::Unit> units(1 + this->guards.size());

@@ -43,6 +43,9 @@ private:
 
   std::vector<WorldState::Unit> m_units;
 
+  Grid2<int> m_losTokens;
+  std::map<Pos, Grid2<int>> m_pathfindings;
+
   std::deque<AnimationState> m_nextAnimations;
   time_t m_msTimeUntilNext = 0;
 };
