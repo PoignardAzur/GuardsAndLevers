@@ -10,6 +10,7 @@
 
 #include "Scene.hpp"
 #include "WorldState.hpp"
+#include "ActionState.hpp"
 #include "AnimationState.hpp"
 
 class Inputs;
@@ -45,7 +46,7 @@ public:
 
 private:
   void onPlayerMove(sf::Keyboard::Key key);
-  UnitAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
+  GuardAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
   bool waitingForAnimations() const;
 
   void updateLos();
@@ -55,13 +56,13 @@ private:
   WorldState m_world;
   AnimationState m_animations;
 
-  std::vector<WorldState::Unit> m_units;
+  std::vector<UnitState*> m_units;
 
   std::vector<Grid2<char>> m_individualLosTokens;
   Grid2<char> m_collectiveLosTokens;
   std::unordered_map<Pos, Grid2<int>> m_pathfindings;
 
-  std::deque<AnimationState> m_nextAnimations;
+  std::deque<ActionState> m_nextActions;
   time_t m_msTimeUntilNext = 0;
 };
 

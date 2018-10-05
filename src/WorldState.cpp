@@ -5,7 +5,7 @@
 #include <climits>
 #include <cassert>
 #include "WorldState.hpp"
-#include "UnitAction.hpp"
+#include "AnimationState.hpp"
 
 bool WorldState::isSolid(Tile tile) {
   switch (tile) {
@@ -17,6 +17,20 @@ bool WorldState::isSolid(Tile tile) {
     return false;
     case Tile::ClosedDoor:
     return true;
+    case Tile::TileCount:
+    break;
+  }
+  assert(0);
+}
+
+bool WorldState::isTrigger(Tile tile) {
+  switch (tile) {
+    case Tile::Ground:
+    return false;
+    case Tile::Wall:
+    case Tile::OpenDoor:
+    case Tile::ClosedDoor:
+    return false;
     case Tile::TileCount:
     break;
   }
@@ -109,26 +123,12 @@ void WorldState::triggerTile(Grid2<Tile>& tilemap, Pos triggeredTile) {
   }
 }
 
-std::vector<WorldState::Unit> WorldState::getUnits() {
-  std::vector<WorldState::Unit> units(1 + this->guards.size());
+std::vector<UnitState*> WorldState::getUnits() {
+  std::vector<UnitState*> units(1 + this->guards.size());
 
-  units[0] = { &this->player.pos, sf::Color::Green };
+  units[0] = &this->player;
   for (size_t i = 0; i < this->guards.size(); ++i) {
-    units[i + 1] = { &this->guards[i].pos, sf::Color::Red };
+    units[i + 1] = &this->guards[i];
   }
   return units;
-}
-
-Pos getDeltaPosFromDir(Direction dir) {
-  switch (dir) {
-    case Direction::Up:
-      return { 0, -1 };
-    case Direction::Right:
-      return { 1, 0 };
-    case Direction::Down:
-      return { 0, 1 };
-    case Direction::Left:
-      return { -1, 0 };
-  }
-  assert(0);
 }

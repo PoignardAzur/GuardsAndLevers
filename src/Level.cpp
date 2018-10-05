@@ -9,8 +9,8 @@
 Level::Level() {
   m_world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
-    { GuardState {{2, 3}, Direction::Up, { {7, 7}, {2, 7} }} },
-    PlayerState {{3, 3}}
+    { GuardState {{{2, 3}, Direction::Up}, { {7, 7}, {2, 7} }} },
+    PlayerState {{{3, 3}, Direction::Up}}
   };
 
   for (long x = 1; x < 9; ++x) {
@@ -21,7 +21,7 @@ Level::Level() {
   m_world.tiles.set(3, 2, Tile::ClosedDoor);
 
   m_units = m_world.getUnits();
-  m_animations.unitAnimations.resize(m_units.size(), {});
+  m_animations = ActionState(m_world.guards.size()).makeAnimationState();
 
   m_individualLosTokens.resize(m_world.guards.size());
   updateLos();
@@ -62,12 +62,16 @@ void Level::update(Inputs& inputs) {
 
   for (size_t i = 0; i < m_units.size(); ++i) {
     UnitAnimation& animation = m_animations.unitAnimations[i];
-    WorldState::Unit& unit = m_units[i];
 
     animation.msLifeTime += dt;
-    if (animation.msLifeTime >= animation.msDuration()) {
-      animation.action.applyChanges(unit);
-      animation = {};
+    if (animation.msLifeTime >= animation.msDuration) {
+      // FIXME
+      animation = {
+        MoveType::Idle,
+        Direction::Up,
+        animation.color,
+        animation.msDuration
+      };
     }
   }
 
@@ -77,20 +81,13 @@ void Level::update(Inputs& inputs) {
   else {
     m_msTimeUntilNext = 0;
 
-    if (!m_nextAnimations.empty()) {
-      for (size_t i = 0; i < m_units.size(); ++i) {
-        auto& currentAnim = m_animations.unitAnimations[i];
-        const auto& nextAnim = m_nextAnimations[0].unitAnimations[i];
-
-        if (nextAnim.action.type != UnitAction::Type::IdleAction) {
-          currentAnim = nextAnim;
-        }
-      }
-      m_msTimeUntilNext = m_nextAnimations[0].msMaxDuration();
-      m_nextAnimations.pop_front();
-    }
-    else {
+    if (!m_nextActions.empty()) {
+      m_nextActions[0].applyChanges(m_world);
       updateLos();
+
+      m_animations = m_nextActions[0].makeAnimationState();
+      m_msTimeUntilNext = m_animations.msMaxDuration();
+      m_nextActions.pop_front();
     }
   }
 }
@@ -101,7 +98,7 @@ void Level::display(sf::RenderTarget& window) const {
 }
 
 bool Level::waitingForAnimations() const {
-  return m_msTimeUntilNext != 0 || !m_nextAnimations.empty();
+  return m_msTimeUntilNext != 0 || !m_nextActions.empty();
 }
 
 void Level::updateLos() {

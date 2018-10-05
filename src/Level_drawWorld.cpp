@@ -41,17 +41,18 @@ void Level::drawWorld(sf::RenderTarget& window) const {
 
   assert(m_units.size() == m_animations.unitAnimations.size());
   for (size_t i = 0; i < m_units.size(); ++i) {
-    const WorldState::Unit& unit = m_units[i];
+    const UnitState* unit = m_units[i];
     const UnitAnimation& animation = m_animations.unitAnimations[i];
 
-    // spriteAnim = spriteSheet[unit.spriteName, animation.type];
-    circle.setFillColor(unit.color);
+    assert(animation.msLifeTime < animation.msDuration);
+    // time_t msAnimTime = std::min(animation.msLifeTime, animation.msDuration);
+    // spriteAnim = spriteSheet[unit.spriteName, animation.type, msAnimTime];
+    circle.setFillColor(animation.color);
 
-    time_t msAnimTime = std::min(animation.msLifeTime, animation.msDuration());
-    sf::Vector2f dpos = animation.getDeltaPos(msAnimTime);
+    sf::Vector2f dpos = animation.getDeltaPos();
     circle.setPosition(
-      x0 + (unit.pos->x + dpos.x) * tileSize.x,
-      y0 + (unit.pos->y + dpos.y) * tileSize.y
+      x0 + (unit->pos.x + dpos.x) * tileSize.x,
+      y0 + (unit->pos.y + dpos.y) * tileSize.y
     );
     window.draw(circle);
   }

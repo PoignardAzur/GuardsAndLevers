@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-UnitAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i) {
+GuardAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i) {
   assert(i < m_world.guards.size());
 
   GuardState& guard = m_world.guards[i];
@@ -39,6 +39,5 @@ UnitAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t 
       minDistance = pathfindingDistances->get(selectedPos);
     }
   }
-  // TODO - Bump into levers
-  return { UnitAction::Type::MoveAction, selectedDir };
+  return { MoveType::Move, selectedDir };
 }

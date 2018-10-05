@@ -2,7 +2,8 @@
 #include <cassert>
 #include "Level.hpp"
 
-UnitAction _getPlayerAction(sf::Keyboard::Key key) {
+// TODO - use in onKeyPressed
+PlayerAction _getPlayerAction(sf::Keyboard::Key key) {
   Direction dir;
 
   switch (key) {
@@ -26,37 +27,43 @@ UnitAction _getPlayerAction(sf::Keyboard::Key key) {
       assert(0);
     }
   }
-  return { UnitAction::Type::MoveAction, dir };
+  return {{ MoveType::Move, dir }};
 }
 
 void Level::onPlayerMove(sf::Keyboard::Key key) {
-  std::vector<UnitAction> actions(m_units.size());
-  AnimationState nextState;
+  ActionState moveActions(m_world.guards.size());
+  WorldState nextState = m_world;
+  m_nextActions = {};
+  m_msTimeUntilNext = 0;
 
   // MOVE PLAYER
-  actions[0] = { _getPlayerAction(key) };
+  moveActions.playerAction = _getPlayerAction(key);
 
-  auto nextPlayerPos = m_world.player.pos + getDeltaPosFromDir(actions[0].dir);
+  auto nextPlayerPos = m_world.player.pos + getDeltaPosFromDir(moveActions.playerAction.dir);
   if (WorldState::isSolid(m_world.tiles.get(nextPlayerPos))) {
-    actions[0].type = UnitAction::Type::BumpAction;
+    moveActions.playerAction.type = MoveType::Bump;
     nextPlayerPos = m_world.player.pos;
   }
 
   // MOVE ENEMIES
   for (size_t i = 0; i < m_world.guards.size(); ++i) {
-    actions[i + 1] = nextGuardMovement(
+    moveActions.guardActions[i] = nextGuardMovement(
       WorldState::getDistances(m_world.tiles, nextPlayerPos), i
     );
   }
 
   // HANDLE TERRAIN
   nextState.tiles = m_world.tiles;
-  for (size_t i = 0; i < actions.size(); ++i) {
-    const WorldState::Unit& unit = m_units[i];
+  auto allActions = moveActions.getAllActions();
+  for (size_t i = 0; i < allActions.size(); ++i) {
+    const UnitState* unit = m_units[i];
 
-    if (actions[i].type == UnitAction::Type::BumpAction) {
-      Pos bumpPos = *unit.pos + getDeltaPosFromDir(actions[i].dir);
-      WorldState::triggerTile(nextState.tiles, bumpPos);
+    if (allActions[i]->type == MoveType::Move) {
+      Pos nextPos = unit->pos + getDeltaPosFromDir(allActions[i]->dir);
+      if (WorldState::isTrigger(nextState.tiles.get(nextPos))) {
+        WorldState::triggerTile(nextState.tiles, nextPos);
+        allActions[i]->type = MoveType::Bump;
+      }
     }
   }
 
@@ -67,40 +74,34 @@ void Level::onPlayerMove(sf::Keyboard::Key key) {
   bool checkCollisions = true;
   while (checkCollisions) {
     checkCollisions = false;
-    for (size_t i = 0; i < actions.size(); ++i) {
-      const WorldState::Unit& unit1 = m_units[i];
-      Pos nextPos1 = *unit1.pos;
+    for (size_t i = 0; i < allActions.size(); ++i) {
+      const UnitState* unit1 = m_units[i];
+      Pos nextPos1 = unit1->pos;
 
-      if (actions[i].type == UnitAction::Type::MoveAction) {
-        nextPos1 += getDeltaPosFromDir(actions[i].dir);
+      if (allActions[i]->type == MoveType::Move) {
+        nextPos1 += getDeltaPosFromDir(allActions[i]->dir);
       }
 
-      for (size_t j = 0; j < actions.size(); ++j) {
-        const WorldState::Unit& unit2 = m_units[j];
+      for (size_t j = 0; j < allActions.size(); ++j) {
+        const UnitState* unit2 = m_units[j];
 
-        if (actions[j].type == UnitAction::Type::MoveAction) {
-          Pos nextPos2 = *unit2.pos + getDeltaPosFromDir(actions[j].dir);
+        if (allActions[j]->type == MoveType::Move) {
+          Pos nextPos2 = unit2->pos + getDeltaPosFromDir(allActions[j]->dir);
 
           if (i != j && nextPos1 == nextPos2) {
-            actions[j].type = UnitAction::Type::BumpAction;
+            allActions[j]->type = MoveType::Bump;
           }
         }
       }
     }
   }
 
-  // UPDATE LOS
-  // TODO
+  // APPLY MOVEMENTS
+  m_nextActions.push_back(moveActions);
+  moveActions.applyChanges(nextState);
 
   // SPREAD ANGRY
   // TODO
 
-  // ADD MOVEMENT ANIMATIONS
-  nextState.unitAnimations.resize(m_units.size(), {});
-  for (size_t i = 0; i < actions.size(); ++i) {
-    nextState.unitAnimations[i].action = actions[i];
-  }
-
-  m_nextAnimations = { nextState };
-  m_msTimeUntilNext = 0;
+  // TODO - return actions instead of setting them
 }

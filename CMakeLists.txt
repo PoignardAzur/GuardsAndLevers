@@ -15,12 +15,10 @@ add_executable(
   src/Level_drawWorld.cpp
   src/Level_playerMove.cpp
   src/Level_guardAi.cpp
-  src/UnitAction.cpp
-  src/UnitAction.hpp
-  src/UnitAnimation.cpp
-  src/UnitAnimation.hpp
   src/WorldState.cpp
   src/WorldState.hpp
+  src/ActionState.cpp
+  src/ActionState.hpp
   src/AnimationState.cpp
   src/AnimationState.hpp
 )
