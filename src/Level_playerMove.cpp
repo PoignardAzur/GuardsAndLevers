@@ -30,6 +30,25 @@ PlayerAction _getPlayerAction(sf::Keyboard::Key key) {
   return {{ MoveType::Move, dir }};
 }
 
+bool _canSeePlayerOrAngryGuard(
+  const WorldState& worldState,
+  size_t guardId,
+  const Grid2<char>& losTokens
+) {
+  if (losTokens.get(worldState.player.pos)) {
+    return true;
+  }
+  for (size_t i = 0; i < worldState.guards.size(); ++i) {
+    const GuardState& otherGuard = worldState.guards[i];
+    if (i != guardId) {
+      if (otherGuard.isAngry && losTokens.get(otherGuard.pos)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void Level::onPlayerMove(sf::Keyboard::Key key) {
   ActionState moveActions(m_world.guards.size());
   WorldState nextState = m_world;
@@ -101,7 +120,44 @@ void Level::onPlayerMove(sf::Keyboard::Key key) {
   moveActions.applyChanges(nextState);
 
   // SPREAD ANGRY
-  // TODO
+  std::vector<Grid2<char>> nextLosTokens(nextState.guards.size());
+  for (size_t i = 0; i < nextState.guards.size(); ++i) {
+    nextLosTokens[i] = WorldState::generateLosTokens(
+      nextState.tiles, nextState.guards[i]
+    );
+  }
+
+  bool checkLosAgain = true;
+  while (checkLosAgain && !nextState.player.isDead) {
+    checkLosAgain = false;
+
+    ActionState nextActions(m_world.guards.size());
+
+    for (size_t i = 0; i < nextState.guards.size(); ++i) {
+      GuardState& guard = nextState.guards[i];
+
+      if (guard.isAngry) {
+        if (auto dir = guard.isNextTo(nextState.player.pos)) {
+          // TODO - GetCaught action
+          // TODO - HitPlayer action
+          nextActions.playerAction = {{ MoveType::Bump, Direction::Left }};
+          nextActions.guardActions[i] = {{ MoveType::Bump, *dir }};
+        }
+      }
+      if (!guard.isAngry && _canSeePlayerOrAngryGuard(nextState, i, nextLosTokens[i])) {
+        // TODO - GetAngry action
+        nextActions.guardActions[i] = {{ MoveType::Bump, Direction::Up }};
+        // FIXME
+        guard.isAngry = true;
+        checkLosAgain = true;
+      }
+    }
+
+    if (nextState.player.isDead || checkLosAgain) {
+      m_nextActions.push_back(nextActions);
+      nextActions.applyChanges(nextState);
+    }
+  }
 
   // TODO - return actions instead of setting them
 }

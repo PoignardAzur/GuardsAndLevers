@@ -3,6 +3,7 @@
 #define WORLD_STATE_HPP
 
 #include <vector>
+#include <optional>
 
 #include <SFML/Graphics.hpp>
 #include "Grid2.hpp"
@@ -27,6 +28,8 @@ struct PlayerState : public UnitState {
 };
 
 struct GuardState : public UnitState {
+  std::optional<Direction> isNextTo(Pos target) const;
+
   std::vector<Pos> patrolStops;
   size_t nextStopId = 0;
   bool isAngry = false;

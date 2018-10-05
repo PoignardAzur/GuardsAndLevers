@@ -13,8 +13,8 @@ class UnitAction {
 public:
   // TODO - idle anims have random duration
 
-  MoveType type;
-  Direction dir;
+  MoveType type = MoveType::Idle;
+  Direction dir = Direction::Up;
 };
 
 class PlayerAction : public UnitAction {

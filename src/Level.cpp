@@ -9,8 +9,8 @@
 Level::Level() {
   m_world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
-    { GuardState {{{2, 3}, Direction::Up}, { {7, 7}, {2, 7} }} },
-    PlayerState {{{3, 3}, Direction::Up}}
+    { GuardState {{{2, 6}, Direction::Up}, { {7, 7}, {2, 7} }} },
+    PlayerState {{{6, 3}, Direction::Up}}
   };
 
   for (long x = 1; x < 9; ++x) {

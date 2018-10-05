@@ -7,6 +7,24 @@
 #include "WorldState.hpp"
 #include "AnimationState.hpp"
 
+std::optional<Direction> GuardState::isNextTo(Pos target) const {
+  Direction directions[] = {
+    Direction::Up,
+    Direction::Right,
+    Direction::Down,
+    Direction::Left
+  };
+
+  for (Direction dir : directions) {
+    auto testedPos = this->pos + getDeltaPosFromDir(dir);
+
+    if (testedPos == target) {
+      return dir;
+    }
+  }
+  return std::nullopt;
+}
+
 bool WorldState::isSolid(Tile tile) {
   switch (tile) {
     case Tile::Ground:
