@@ -9,6 +9,9 @@ void PlayerAction::applyChanges(PlayerState& player) const {
     player.pos.x += dpos.x;
     player.pos.y += dpos.y;
   }
+  if (this->type == MoveType::Move || this->type == MoveType::Bump) {
+    player.dir = this->dir;
+  }
 }
 
 UnitAnimation PlayerAction::getAnimation() const {
@@ -25,6 +28,12 @@ void GuardAction::applyChanges(GuardState& guard) const {
     Pos dpos = getDeltaPosFromDir(this->dir);
     guard.pos.x += dpos.x;
     guard.pos.y += dpos.y;
+  }
+  if (this->type == MoveType::Move || this->type == MoveType::Bump) {
+    guard.dir = this->dir;
+  }
+  if (this->type == MoveType::GetAngry) {
+    guard.isAngry = true;
   }
 }
 

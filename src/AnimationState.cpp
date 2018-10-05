@@ -10,7 +10,8 @@ sf::Vector2f UnitAnimation::getDeltaPos() const {
 
       return { progression * dpos.x, progression * dpos.y };
     }
-    case MoveType::Bump: {
+    case MoveType::Bump:
+    case MoveType::GetAngry: {
       Pos dpos = getDeltaPosFromDir(this->dir);
       float progression = (float)msLifeTime / (float)msDuration;
 

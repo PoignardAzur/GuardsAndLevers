@@ -18,7 +18,8 @@ enum class Direction {
 enum class MoveType {
   Move,
   Bump,
-  Idle
+  Idle,
+  GetAngry
 };
 
 struct UnitAnimation {

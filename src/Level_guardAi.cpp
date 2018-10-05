@@ -3,8 +3,6 @@
 #include <cassert>
 #include "Level.hpp"
 
-#include <cstdio>
-
 GuardAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i) {
   assert(i < m_world.guards.size());
 

@@ -1,4 +1,4 @@
-
+#include <cstdio>
 #include <cassert>
 #include "Level.hpp"
 
@@ -128,7 +128,8 @@ void Level::onPlayerMove(sf::Keyboard::Key key) {
   }
 
   bool checkLosAgain = true;
-  while (checkLosAgain && !nextState.player.isDead) {
+  bool isPlayerDead = false;
+  while (checkLosAgain && !isPlayerDead) {
     checkLosAgain = false;
 
     ActionState nextActions(m_world.guards.size());
@@ -140,20 +141,19 @@ void Level::onPlayerMove(sf::Keyboard::Key key) {
         if (auto dir = guard.isNextTo(nextState.player.pos)) {
           // TODO - GetCaught action
           // TODO - HitPlayer action
-          nextActions.playerAction = {{ MoveType::Bump, Direction::Left }};
+          nextActions.playerAction = {{ MoveType::Bump, Direction::Up }};
           nextActions.guardActions[i] = {{ MoveType::Bump, *dir }};
+          isPlayerDead = true;
         }
       }
       if (!guard.isAngry && _canSeePlayerOrAngryGuard(nextState, i, nextLosTokens[i])) {
-        // TODO - GetAngry action
-        nextActions.guardActions[i] = {{ MoveType::Bump, Direction::Up }};
+        nextActions.guardActions[i] = {{ MoveType::GetAngry, Direction::Up }};
         // FIXME
-        guard.isAngry = true;
         checkLosAgain = true;
       }
     }
 
-    if (nextState.player.isDead || checkLosAgain) {
+    if (isPlayerDead || checkLosAgain) {
       m_nextActions.push_back(nextActions);
       nextActions.applyChanges(nextState);
     }
