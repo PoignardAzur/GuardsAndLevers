@@ -45,7 +45,8 @@ public:
   using int_dice = std::uniform_int_distribution<int>;
 
 private:
-  void onPlayerMove(sf::Keyboard::Key key);
+  PlayerAction getPlayerAction(sf::Keyboard::Key key) const;
+  void onPlayerMove(PlayerAction playerAction);
   GuardAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
   bool waitingForAnimations() const;
 

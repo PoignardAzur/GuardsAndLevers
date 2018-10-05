@@ -42,12 +42,13 @@ void Level::onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key) {
   (void)inputs;
 
   switch (key) {
+    case sf::Keyboard::S:
     case sf::Keyboard::Up:
     case sf::Keyboard::Right:
     case sf::Keyboard::Down:
     case sf::Keyboard::Left: {
       if (!waitingForAnimations()) {
-        onPlayerMove(key);
+        onPlayerMove(getPlayerAction(key));
       }
       break;
     }

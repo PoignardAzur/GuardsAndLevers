@@ -2,11 +2,13 @@
 #include <cassert>
 #include "Level.hpp"
 
-// TODO - use in onKeyPressed
-PlayerAction _getPlayerAction(sf::Keyboard::Key key) {
+PlayerAction Level::getPlayerAction(sf::Keyboard::Key key) const {
   Direction dir;
 
   switch (key) {
+    case sf::Keyboard::S: {
+      return {{ MoveType::Bump, Direction::Up }};
+    }
     case sf::Keyboard::Up: {
       dir = Direction::Up;
       break;
@@ -49,20 +51,22 @@ bool _canSeePlayerOrAngryGuard(
   return false;
 }
 
-void Level::onPlayerMove(sf::Keyboard::Key key) {
+void Level::onPlayerMove(PlayerAction playerAction) {
   ActionState moveActions(m_world.guards.size());
   WorldState nextState = m_world;
   m_nextActions = {};
   m_msTimeUntilNext = 0;
 
   // MOVE PLAYER
-  moveActions.playerAction = _getPlayerAction(key);
-
-  auto nextPlayerPos = m_world.player.pos + getDeltaPosFromDir(moveActions.playerAction.dir);
+  Pos nextPlayerPos = m_world.player.pos;
+  if (playerAction.type == MoveType::Move) {
+    nextPlayerPos += getDeltaPosFromDir(playerAction.dir);
+  }
   if (WorldState::isSolid(m_world.tiles.get(nextPlayerPos))) {
-    moveActions.playerAction.type = MoveType::Bump;
+    playerAction.type = MoveType::Bump;
     nextPlayerPos = m_world.player.pos;
   }
+  moveActions.playerAction = playerAction;
 
   // MOVE ENEMIES
   for (size_t i = 0; i < m_world.guards.size(); ++i) {
