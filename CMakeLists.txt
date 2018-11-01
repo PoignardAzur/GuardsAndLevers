@@ -4,6 +4,7 @@ project(Teleshooter)
 # Define sources and executable
 set(EXECUTABLE_NAME "GuardsAndLevers")
 set(EXECUTABLE_OUTPUT_PATH "bin/${CMAKE_BUILD_TYPE}")
+include_directories(src)
 add_executable(
   ${EXECUTABLE_NAME}
 
@@ -11,10 +12,11 @@ add_executable(
   src/Inputs.cpp
   src/Inputs.hpp
   src/Level.cpp
-  src/Level.hpp
   src/Level_drawWorld.cpp
-  src/Level_playerMove.cpp
-  src/Level_guardAi.cpp
+  src/Level.hpp
+  src/LevelLogic/LevelLogic.cpp
+  src/LevelLogic/LevelLogic_guardAi.cpp
+  src/LevelLogic/LevelLogic.hpp
   src/WorldState.cpp
   src/WorldState.hpp
   src/ActionState.cpp

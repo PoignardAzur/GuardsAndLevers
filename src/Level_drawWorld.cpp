@@ -18,13 +18,13 @@ void Level::drawWorld(sf::RenderTarget& window) const {
   sf::RectangleShape rectangle;
   rectangle.setSize(tileSize);
 
-  Pos worldSize = m_world.tiles.getSize();
+  Pos worldSize = m_levelLogic->world.tiles.getSize();
   for (long x = 0; x < worldSize.x; ++x) {
     for (long y = 0; y < worldSize.y; ++y) {
-      sf::Color losColor = m_collectiveLosTokens.get(x, y)
+      sf::Color losColor = m_levelLogic->collectiveLosTokens.get(x, y)
         ? sf::Color(0xFFFFFFFF)
         : sf::Color(0xE0E0E0FF);
-      Tile tileId = m_world.tiles.get(x, y);
+      Tile tileId = m_levelLogic->world.tiles.get(x, y);
       rectangle.setFillColor(tileColors[(size_t)tileId] * losColor);
       rectangle.setPosition(x0 + x * tileSize.x, y0 + y * tileSize.y);
       window.draw(rectangle);
@@ -39,9 +39,9 @@ void Level::drawWorld(sf::RenderTarget& window) const {
   circle.setRadius(std::min(tileSize.x, tileSize.y) * 0.4f);
   circle.setPointCount(16);
 
-  assert(m_units.size() == m_animations.unitAnimations.size());
-  for (size_t i = 0; i < m_units.size(); ++i) {
-    const UnitState* unit = m_units[i];
+  assert(m_levelLogic->units.size() == m_animations.unitAnimations.size());
+  for (size_t i = 0; i < m_levelLogic->units.size(); ++i) {
+    const UnitState* unit = m_levelLogic->units[i];
     const UnitAnimation& animation = m_animations.unitAnimations[i];
 
     assert(animation.msLifeTime < animation.msDuration);

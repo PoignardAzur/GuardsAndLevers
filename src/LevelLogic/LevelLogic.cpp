@@ -1,38 +1,29 @@
 #include <cstdio>
 #include <cassert>
-#include "Level.hpp"
+#include "LevelLogic.hpp"
 
-PlayerAction Level::getPlayerAction(sf::Keyboard::Key key) const {
-  Direction dir;
+LevelLogic::LevelLogic(WorldState state) {
+  this->world = state;
 
-  switch (key) {
-    case sf::Keyboard::S: {
-      return {{ MoveType::Bump, Direction::Up }};
-    }
-    case sf::Keyboard::Up: {
-      dir = Direction::Up;
-      break;
-    }
-    case sf::Keyboard::Right: {
-      dir = Direction::Right;
-      break;
-    }
-    case sf::Keyboard::Down: {
-      dir = Direction::Down;
-      break;
-    }
-    case sf::Keyboard::Left: {
-      dir = Direction::Left;
-      break;
-    }
-    default: {
-      assert(0);
+  this->units = this->world.getUnits();
+  this->guardCount = this->world.guards.size();
+
+  this->individualLosTokens.resize(this->guardCount);
+  updateLos();
+
+  for (const GuardState& guard : this->world.guards) {
+    for (Pos patrolStop : guard.patrolStops) {
+      if (this->pathfindings.count(patrolStop) != 0) {
+        continue;
+      }
+      this->pathfindings[patrolStop] = WorldState::getDistances(
+        this->world.tiles, patrolStop
+      );
     }
   }
-  return {{ MoveType::Move, dir }};
 }
 
-bool _canSeePlayerOrAngryGuard(
+static bool _canSeePlayerOrAngryGuard(
   const WorldState& worldState,
   size_t guardId,
   const Grid2<char>& losTokens
@@ -51,35 +42,35 @@ bool _canSeePlayerOrAngryGuard(
   return false;
 }
 
-void Level::onPlayerMove(PlayerAction playerAction) {
-  ActionState moveActions(m_world.guards.size());
-  WorldState nextState = m_world;
-  m_nextActions = {};
-  m_msTimeUntilNext = 0;
+std::deque<ActionState> LevelLogic::onPlayerMove(PlayerAction playerAction) {
+  ActionState moveActions(this->guardCount);
+  WorldState nextState = this->world;
+  std::deque<ActionState> nextActions;
+  nextActions = {};
 
   // MOVE PLAYER
-  Pos nextPlayerPos = m_world.player.pos;
+  Pos nextPlayerPos = this->world.player.pos;
   if (playerAction.type == MoveType::Move) {
     nextPlayerPos += getDeltaPosFromDir(playerAction.dir);
   }
-  if (WorldState::isSolid(m_world.tiles.get(nextPlayerPos))) {
+  if (WorldState::isSolid(this->world.tiles.get(nextPlayerPos))) {
     playerAction.type = MoveType::Bump;
-    nextPlayerPos = m_world.player.pos;
+    nextPlayerPos = this->world.player.pos;
   }
   moveActions.playerAction = playerAction;
 
   // MOVE ENEMIES
-  for (size_t i = 0; i < m_world.guards.size(); ++i) {
+  for (size_t i = 0; i < this->guardCount; ++i) {
     moveActions.guardActions[i] = nextGuardMovement(
-      WorldState::getDistances(m_world.tiles, nextPlayerPos), i
+      WorldState::getDistances(this->world.tiles, nextPlayerPos), i
     );
   }
 
   // HANDLE TERRAIN
-  nextState.tiles = m_world.tiles;
+  nextState.tiles = this->world.tiles;
   auto allActions = moveActions.getAllActions();
   for (size_t i = 0; i < allActions.size(); ++i) {
-    const UnitState* unit = m_units[i];
+    const UnitState* unit = this->units[i];
 
     if (allActions[i]->type == MoveType::Move) {
       Pos nextPos = unit->pos + getDeltaPosFromDir(allActions[i]->dir);
@@ -98,7 +89,7 @@ void Level::onPlayerMove(PlayerAction playerAction) {
   while (checkCollisions) {
     checkCollisions = false;
     for (size_t i = 0; i < allActions.size(); ++i) {
-      const UnitState* unit1 = m_units[i];
+      const UnitState* unit1 = this->units[i];
       Pos nextPos1 = unit1->pos;
 
       if (allActions[i]->type == MoveType::Move) {
@@ -106,7 +97,7 @@ void Level::onPlayerMove(PlayerAction playerAction) {
       }
 
       for (size_t j = 0; j < allActions.size(); ++j) {
-        const UnitState* unit2 = m_units[j];
+        const UnitState* unit2 = this->units[j];
 
         if (allActions[j]->type == MoveType::Move) {
           Pos nextPos2 = unit2->pos + getDeltaPosFromDir(allActions[j]->dir);
@@ -120,12 +111,12 @@ void Level::onPlayerMove(PlayerAction playerAction) {
   }
 
   // APPLY MOVEMENTS
-  m_nextActions.push_back(moveActions);
+  nextActions.push_back(moveActions);
   moveActions.applyChanges(nextState);
 
   // SPREAD ANGRY
-  std::vector<Grid2<char>> nextLosTokens(nextState.guards.size());
-  for (size_t i = 0; i < nextState.guards.size(); ++i) {
+  std::vector<Grid2<char>> nextLosTokens(this->guardCount);
+  for (size_t i = 0; i < this->guardCount; ++i) {
     nextLosTokens[i] = WorldState::generateLosTokens(
       nextState.tiles, nextState.guards[i]
     );
@@ -136,32 +127,52 @@ void Level::onPlayerMove(PlayerAction playerAction) {
   while (checkLosAgain && !isPlayerDead) {
     checkLosAgain = false;
 
-    ActionState nextActions(m_world.guards.size());
+    ActionState angryGuardActions(this->guardCount);
 
-    for (size_t i = 0; i < nextState.guards.size(); ++i) {
+    for (size_t i = 0; i < this->guardCount; ++i) {
       GuardState& guard = nextState.guards[i];
 
       if (guard.isAngry) {
         if (auto dir = guard.isNextTo(nextState.player.pos)) {
           // TODO - GetCaught action
           // TODO - HitPlayer action
-          nextActions.playerAction = {{ MoveType::Bump, Direction::Up }};
-          nextActions.guardActions[i] = {{ MoveType::Bump, *dir }};
+          angryGuardActions.playerAction = {{ MoveType::Bump, Direction::Up }};
+          angryGuardActions.guardActions[i] = {{ MoveType::Bump, *dir }};
           isPlayerDead = true;
         }
       }
       if (!guard.isAngry && _canSeePlayerOrAngryGuard(nextState, i, nextLosTokens[i])) {
-        nextActions.guardActions[i] = {{ MoveType::GetAngry, Direction::Up }};
+        angryGuardActions.guardActions[i] = {{ MoveType::GetAngry, Direction::Up }};
         // FIXME
         checkLosAgain = true;
       }
     }
 
     if (isPlayerDead || checkLosAgain) {
-      m_nextActions.push_back(nextActions);
-      nextActions.applyChanges(nextState);
+      nextActions.push_back(angryGuardActions);
+      angryGuardActions.applyChanges(nextState);
     }
   }
 
-  // TODO - return actions instead of setting them
+  return nextActions;
+}
+
+void LevelLogic::updateLos() {
+  this->collectiveLosTokens = Grid2<char>(this->world.tiles.getSize(), 0);
+
+  for (size_t i = 0; i < this->guardCount; ++i) {
+    this->individualLosTokens[i] = WorldState::generateLosTokens(
+      this->world.tiles, this->world.guards[i]
+    );
+
+    for (long x = 0; x < this->world.tiles.getSize().x; ++x) {
+      for (long y = 0; y < this->world.tiles.getSize().y; ++y) {
+        this->collectiveLosTokens.set(
+          x, y,
+          this->collectiveLosTokens.get(x, y)
+          || this->individualLosTokens[i].get(x, y)
+        );
+      }
+    }
+  }
 }

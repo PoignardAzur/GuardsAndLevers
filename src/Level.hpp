@@ -4,27 +4,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include <deque>
 #include <random>
-#include <unordered_map>
+#include <optional>
 
+#include "LevelLogic/LevelLogic.hpp"
 #include "Scene.hpp"
-#include "WorldState.hpp"
-#include "ActionState.hpp"
-#include "AnimationState.hpp"
 
 class Inputs;
-
-namespace std {
-  template <>
-  struct hash<Pos>
-  {
-    std::size_t operator()(const Pos& pos) const
-    {
-      return std::hash<long>()(pos.x) ^ std::hash<long>()(pos.y) << 1;
-    }
-  };
-}
 
 class Level : public Scene {
 public:
@@ -38,30 +24,14 @@ public:
   void update(Inputs& inputs);
   void display(sf::RenderTarget& window) const;
 
-  using Rng = std::default_random_engine;
-
-  using float_dice = std::uniform_real_distribution<float>;
-  using double_dice = std::uniform_real_distribution<double>;
-  using int_dice = std::uniform_int_distribution<int>;
-
 private:
   PlayerAction getPlayerAction(sf::Keyboard::Key key) const;
-  void onPlayerMove(PlayerAction playerAction);
-  GuardAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
+
   bool waitingForAnimations() const;
-
-  void updateLos();
-
   void drawWorld(sf::RenderTarget& window) const;
 
-  WorldState m_world;
+  std::optional<LevelLogic> m_levelLogic;
   AnimationState m_animations;
-
-  std::vector<UnitState*> m_units;
-
-  std::vector<Grid2<char>> m_individualLosTokens;
-  Grid2<char> m_collectiveLosTokens;
-  std::unordered_map<Pos, Grid2<int>> m_pathfindings;
 
   std::deque<ActionState> m_nextActions;
   time_t m_msTimeUntilNext = 0;

@@ -1,12 +1,12 @@
 
 #include <climits>
 #include <cassert>
-#include "Level.hpp"
+#include "LevelLogic.hpp"
 
-GuardAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i) {
-  assert(i < m_world.guards.size());
+GuardAction LevelLogic::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i) {
+  assert(i < this->world.guards.size());
 
-  GuardState& guard = m_world.guards[i];
+  GuardState& guard = this->world.guards[i];
   const Grid2<int>* pathfindingDistances = nullptr;
 
   if (guard.isAngry) {
@@ -19,7 +19,7 @@ GuardAction Level::nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t
       guard.nextStopId %= guard.patrolStops.size();
     }
     Pos nextStop = guard.patrolStops[guard.nextStopId];
-    pathfindingDistances = &m_pathfindings.find(nextStop)->second;
+    pathfindingDistances = &this->pathfindings.find(nextStop)->second;
   }
 
   Direction directions[] = {
