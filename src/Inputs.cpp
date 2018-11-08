@@ -1,3 +1,5 @@
+#include <imgui/imgui.h>
+#include <imgui/imgui-SFML.h>
 
 #include "Inputs.hpp"
 
@@ -34,6 +36,9 @@ void Inputs::update(Scene& scene) {
   sf::Event event;
 
   while (_window->pollEvent(event)) {
+    // FIXME
+    ImGui::SFML::ProcessEvent(event);
+
     switch (event.type) {
       case sf::Event::Closed:
         _isWindowClosed = true;

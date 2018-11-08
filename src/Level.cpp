@@ -1,3 +1,5 @@
+#include <imgui/imgui.h>
+#include <imgui/imgui-SFML.h>
 
 #include <cmath>
 #include <algorithm>
@@ -84,6 +86,19 @@ void Level::update(Inputs& inputs) {
 void Level::display(sf::RenderTarget& window) const {
   window.clear();
   drawWorld(window);
+
+  static bool tool1Selected = true;
+  static bool tool2Selected = false;
+  static bool tool3Selected = false;
+
+  ImGui::Begin("Tool window");
+  {
+    ImGui::RadioButton("Tool1", tool1Selected);
+    ImGui::RadioButton("Tool2 aa", tool2Selected);
+    ImGui::RadioButton("Tool3", tool3Selected);
+  }
+  ImGui::End(); // Tool window
+  ImGui::SFML::Render(window);
 }
 
 PlayerAction Level::getPlayerAction(sf::Keyboard::Key key) const {

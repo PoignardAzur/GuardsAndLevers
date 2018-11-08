@@ -21,7 +21,7 @@ namespace std {
 }
 
 struct LevelLogic {
-  LevelLogic(WorldState state);
+  explicit LevelLogic(WorldState state);
 
   std::deque<ActionState> onPlayerMove(PlayerAction playerAction);
   GuardAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
