@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <random>
+#include <string_view>
 
 #include "Scene.hpp"
 
@@ -14,8 +15,7 @@ class Inputs {
 public:
   Inputs(sf::Window* window, unsigned seed);
 
-  bool isKeyPressed(sf::Keyboard::Key key) const;
-  bool isMbPressed(sf::Mouse::Button button) const;
+  bool isKeyPressed(const std::string_view action) const;
   sf::Vector2f cursorPosition() const;
   bool isWindowClosed() const;
 
