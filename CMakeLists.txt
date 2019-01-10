@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 2.6)
-project(Teleshooter)
+project(GuardsAndLevers)
 
 # Define sources and executable
 set(EXECUTABLE_NAME "GuardsAndLevers")
 set(EXECUTABLE_OUTPUT_PATH "bin/${CMAKE_BUILD_TYPE}")
 include_directories(src)
+include_directories(lib)
 add_executable(
   ${EXECUTABLE_NAME}
 
@@ -25,11 +26,18 @@ add_executable(
   src/AnimationState.hpp
 )
 
-# Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+
+# Detect and add SFML
 find_package(SFML 2.4 REQUIRED system window graphics network audio)
+include_directories(${SFML_INCLUDE_DIR})
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 
+# Detect and add OpenGL
+find_package(OpenGL)
+target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
+
+# Set C++ standard to C++17
 set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CXX_STANDARD_REQUIRED true)
 set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CXX_STANDARD 17)
 
