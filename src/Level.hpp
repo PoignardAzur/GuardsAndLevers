@@ -2,6 +2,7 @@
 #ifndef H_LEVEL
 #define H_LEVEL
 
+#include <nuklear_h.h>
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <random>
@@ -14,7 +15,7 @@ class Inputs;
 
 class Level : public Scene {
 public:
-  Level();
+  Level(nk_context *guiContext);
 
   void onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key);
   // void onKeyReleased(Inputs& inputs, sf::Keyboard::Key key);
@@ -29,6 +30,8 @@ private:
 
   bool waitingForAnimations() const;
   void drawWorld(sf::RenderTarget& window) const;
+
+  nk_context *m_guiContext;
 
   std::optional<LevelLogic> m_levelLogic;
   AnimationState m_animations;

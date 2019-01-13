@@ -6,7 +6,9 @@
 #include "Level.hpp"
 #include "units.hpp"
 
-Level::Level() {
+Level::Level(nk_context *guiContext) {
+  m_guiContext = guiContext;
+
   WorldState world = {
     Grid2<Tile>({10, 10}, Tile::Wall),
     {
@@ -84,6 +86,15 @@ void Level::update(Inputs& inputs) {
 void Level::display(sf::RenderTarget& window) const {
   window.clear();
   drawWorld(window);
+
+  auto winSize = window.getSize();
+  if (nk_begin(
+    m_guiContext, "Demo",
+    nk_rect(winSize.x / 2 - 50, winSize.y - 150, 100, 100),
+    NK_WINDOW_TITLE | NK_WINDOW_MOVABLE
+  ))
+  {}
+  nk_end(m_guiContext);
 }
 
 PlayerAction Level::getPlayerAction(sf::Keyboard::Key key) const {

@@ -1,8 +1,9 @@
 
 #include "Inputs.hpp"
 
-Inputs::Inputs(sf::Window* window, unsigned seed) :
+Inputs::Inputs(sf::Window* window, nk_context *guiContext, unsigned seed) :
   _window(window),
+  _guiContext(guiContext),
   _rng(seed)
 {
   _keysPressed.fill(false);
@@ -33,7 +34,10 @@ std::default_random_engine& Inputs::rng() {
 void Inputs::update(Scene& scene) {
   sf::Event event;
 
+  nk_input_begin(_guiContext);
   while (_window->pollEvent(event)) {
+    nk_sfml_handle_event(&event);
+
     switch (event.type) {
       case sf::Event::Closed:
         _isWindowClosed = true;
@@ -77,4 +81,5 @@ void Inputs::update(Scene& scene) {
       break;
     }
   }
+  nk_input_end(_guiContext);
 }
