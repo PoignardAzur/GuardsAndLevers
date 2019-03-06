@@ -6,6 +6,8 @@ set(EXECUTABLE_NAME "GuardsAndLevers")
 set(EXECUTABLE_OUTPUT_PATH "bin/${CMAKE_BUILD_TYPE}")
 include_directories(src)
 include_directories(lib)
+include_directories(lib/tmxlite/include)
+include(lib/tmxlite/src/CMakeLists.txt)
 add_executable(
   ${EXECUTABLE_NAME}
 
@@ -24,6 +26,17 @@ add_executable(
   src/ActionState.hpp
   src/AnimationState.cpp
   src/AnimationState.hpp
+
+  lib/tmxlite/src/detail/pugixml.cpp
+  lib/tmxlite/src/FreeFuncs.cpp
+  lib/tmxlite/src/ImageLayer.cpp
+  lib/tmxlite/src/Map.cpp
+  lib/tmxlite/src/miniz.c
+  lib/tmxlite/src/Object.cpp
+  lib/tmxlite/src/ObjectGroup.cpp
+  lib/tmxlite/src/Property.cpp
+  lib/tmxlite/src/TileLayer.cpp
+  lib/tmxlite/src/Tileset.cpp
 )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})

@@ -2,6 +2,7 @@
 #ifndef H_LEVEL
 #define H_LEVEL
 
+#include <tmxlite/Map.hpp>
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <random>
@@ -14,7 +15,7 @@ class Inputs;
 
 class Level : public Scene {
 public:
-  Level();
+  Level(const tmx::Map& levelData);
 
   void onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key);
   // void onKeyReleased(Inputs& inputs, sf::Keyboard::Key key);
