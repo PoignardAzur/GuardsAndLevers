@@ -64,16 +64,20 @@ std::vector<UnitAction*> ActionState::getAllActions() {
   return actions;
 }
 
-AnimationState ActionState::makeAnimationState() const {
-  AnimationState anims;
+std::vector<UnitAnimation> ActionState::makeAnimations(time_t& msMaxDuration) const {
+  std::vector<UnitAnimation> unitAnimations;
 
-  anims.unitAnimations.reserve(1 + this->guardActions.size());
-  anims.unitAnimations.push_back(this->playerAction.getAnimation());
+  unitAnimations.reserve(1 + this->guardActions.size());
+  unitAnimations.push_back(this->playerAction.getAnimation());
   for (const GuardAction& action: this->guardActions) {
-    anims.unitAnimations.push_back(action.getAnimation());
+    unitAnimations.push_back(action.getAnimation());
   }
 
-  return anims;
+  for (const UnitAnimation& anim: unitAnimations) {
+    msMaxDuration = std::max(msMaxDuration, anim.msDuration);
+  }
+
+  return unitAnimations;
 }
 
 void ActionState::applyChanges(WorldState& world) const {

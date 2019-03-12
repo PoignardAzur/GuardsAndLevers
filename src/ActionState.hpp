@@ -3,7 +3,7 @@
 #define ACTION_STATE_HPP
 
 #include <vector>
-#include "AnimationState.hpp"
+#include "LevelLogic/AnimationState.hpp"
 
 struct PlayerState;
 struct GuardState;
@@ -34,7 +34,7 @@ struct ActionState {
   explicit ActionState(size_t guardCount);
 
   std::vector<UnitAction*> getAllActions();
-  AnimationState makeAnimationState() const;
+  std::vector<UnitAnimation> makeAnimations(time_t& msMaxDuration) const;
   void applyChanges(WorldState& world) const;
   // std::vector<UnitAction*> getUnitActions();
 

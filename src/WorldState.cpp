@@ -5,7 +5,7 @@
 #include <climits>
 #include <cassert>
 #include "WorldState.hpp"
-#include "AnimationState.hpp"
+#include "LevelLogic/AnimationState.hpp"
 
 std::optional<Direction> GuardState::isNextTo(Pos target) const {
   Direction directions[] = {

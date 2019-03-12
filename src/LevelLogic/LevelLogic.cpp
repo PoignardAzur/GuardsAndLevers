@@ -8,6 +8,10 @@ LevelLogic::LevelLogic(WorldState state) {
   this->units = this->world.getUnits();
   this->guardCount = this->world.guards.size();
 
+  time_t msTimeUntilNext = 0;
+  this->unitAnimations = ActionState(this->guardCount).makeAnimations(msTimeUntilNext);
+  (void)msTimeUntilNext;
+
   this->individualLosTokens.resize(this->guardCount);
   updateLos();
   updatePathfinding();

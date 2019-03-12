@@ -32,6 +32,7 @@ struct LevelLogic {
   WorldState world;
 
   std::vector<UnitState*> units;
+  std::vector<UnitAnimation> unitAnimations;
   size_t guardCount = 0;
 
   std::vector<Grid2<char>> individualLosTokens;

@@ -39,10 +39,10 @@ void Level::drawWorld(sf::RenderTarget& window) const {
   circle.setRadius(std::min(tileSize.x, tileSize.y) * 0.4f);
   circle.setPointCount(16);
 
-  assert(m_levelLogic->units.size() == m_animations.unitAnimations.size());
+  assert(m_levelLogic->units.size() == m_levelLogic->unitAnimations.size());
   for (size_t i = 0; i < m_levelLogic->units.size(); ++i) {
     const UnitState* unit = m_levelLogic->units[i];
-    const UnitAnimation& animation = m_animations.unitAnimations[i];
+    const UnitAnimation& animation = m_levelLogic->unitAnimations[i];
 
     assert(animation.msLifeTime < animation.msDuration);
     // time_t msAnimTime = std::min(animation.msLifeTime, animation.msDuration);

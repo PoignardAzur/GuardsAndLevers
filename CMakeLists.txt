@@ -24,8 +24,8 @@ add_executable(
   src/WorldState.hpp
   src/ActionState.cpp
   src/ActionState.hpp
-  src/AnimationState.cpp
-  src/AnimationState.hpp
+  src/LevelLogic/AnimationState.cpp
+  src/LevelLogic/AnimationState.hpp
 
   lib/tmxlite/src/detail/pugixml.cpp
   lib/tmxlite/src/FreeFuncs.cpp

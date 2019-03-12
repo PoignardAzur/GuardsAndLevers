@@ -32,13 +32,6 @@ struct UnitAnimation {
   time_t msLifeTime = 0;
 };
 
-struct AnimationState {
-  std::vector<UnitAnimation> unitAnimations;
-  // Grid2<Tile> tiles;
-
-  time_t msMaxDuration() const;
-};
-
 Pos getDeltaPosFromDir(Direction dir);
 
 #endif // !ANIMATION_STATE_HPP

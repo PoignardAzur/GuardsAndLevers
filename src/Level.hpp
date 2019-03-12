@@ -32,7 +32,6 @@ private:
   void drawWorld(sf::RenderTarget& window) const;
 
   std::optional<LevelLogic> m_levelLogic;
-  AnimationState m_animations;
 
   std::deque<ActionState> m_nextActions;
   time_t m_msTimeUntilNext = 0;

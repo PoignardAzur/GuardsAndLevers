@@ -85,7 +85,6 @@ static WorldState _loadLevel(const tmx::Map& levelData) {
 
 Level::Level(const tmx::Map& levelData) {
   m_levelLogic.emplace(_loadLevel(levelData));
-  m_animations = ActionState(m_levelLogic->guardCount).makeAnimationState();
 }
 
 void Level::onKeyFirstPressed(Inputs& inputs, sf::Keyboard::Key key) {
@@ -112,7 +111,7 @@ void Level::update(Inputs& inputs) {
   // FIXME
   time_t dt = 50;
 
-  for (UnitAnimation& animation : m_animations.unitAnimations) {
+  for (UnitAnimation& animation : m_levelLogic->unitAnimations) {
     animation.msLifeTime += dt;
     if (animation.msLifeTime >= animation.msDuration) {
       // FIXME
@@ -135,8 +134,7 @@ void Level::update(Inputs& inputs) {
       m_nextActions[0].applyChanges(m_levelLogic->world);
       m_levelLogic->updateLos();
 
-      m_animations = m_nextActions[0].makeAnimationState();
-      m_msTimeUntilNext = m_animations.msMaxDuration();
+      m_levelLogic->unitAnimations = m_nextActions[0].makeAnimations(m_msTimeUntilNext);
       m_nextActions.pop_front();
     }
   }
