@@ -27,6 +27,7 @@ struct LevelLogic {
   GuardAction nextGuardMovement(const Grid2<int>& distancesToPlayer, size_t i);
 
   void updateLos();
+  void updatePathfinding();
 
   WorldState world;
 

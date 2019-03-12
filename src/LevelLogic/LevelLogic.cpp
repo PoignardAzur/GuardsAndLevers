@@ -10,17 +10,7 @@ LevelLogic::LevelLogic(WorldState state) {
 
   this->individualLosTokens.resize(this->guardCount);
   updateLos();
-
-  for (const GuardState& guard : this->world.guards) {
-    for (Pos patrolStop : guard.patrolStops) {
-      if (this->pathfindings.count(patrolStop) != 0) {
-        continue;
-      }
-      this->pathfindings[patrolStop] = WorldState::getDistances(
-        this->world.tiles, patrolStop
-      );
-    }
-  }
+  updatePathfinding();
 }
 
 static bool _canSeePlayerOrAngryGuard(
@@ -173,6 +163,19 @@ void LevelLogic::updateLos() {
           || this->individualLosTokens[i].get(x, y)
         );
       }
+    }
+  }
+}
+
+void LevelLogic::updatePathfinding() {
+  for (const GuardState& guard : this->world.guards) {
+    for (Pos patrolStop : guard.patrolStops) {
+      if (this->pathfindings.count(patrolStop) != 0) {
+        continue;
+      }
+      this->pathfindings[patrolStop] = WorldState::getDistances(
+        this->world.tiles, patrolStop
+      );
     }
   }
 }
